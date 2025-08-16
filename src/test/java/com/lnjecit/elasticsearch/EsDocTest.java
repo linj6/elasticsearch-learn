@@ -3,6 +3,8 @@ package com.lnjecit.elasticsearch;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lnjecit.elasticsearch.domain.User;
 import org.apache.http.HttpHost;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
@@ -20,6 +22,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class EsDocTest {
     private RestHighLevelClient client;
@@ -89,6 +94,40 @@ public class EsDocTest {
         DeleteRequest request = new DeleteRequest(USER_INDEX, "1");
         DeleteResponse response = client.delete(request, RequestOptions.DEFAULT);
         System.out.println("删除文档结果:" + response);
+    }
+
+    @Test
+    public void testBatchCreateDoc() throws IOException {
+        List<User> users = new ArrayList<>();
+        User user1 = new User(2L, "韩立", 35, "男");
+        User user2 = new User(3L, "紫川秀", 22, "男");
+        User user3 = new User(4L, "张小凡", 25, "男");
+        users.add(user1);
+        users.add(user2);
+        users.add(user3);
+
+        BulkRequest bulkRequest = new BulkRequest();
+        for (User user : users) {
+            IndexRequest indexRequest = new IndexRequest(USER_INDEX);
+            indexRequest.source(objectMapper.writeValueAsString(user), XContentType.JSON);
+            bulkRequest.add(indexRequest);
+        }
+
+        BulkResponse bulkResponse = client.bulk(bulkRequest, RequestOptions.DEFAULT);
+        System.out.println("批量创建文档结果:" + bulkResponse.getItems().length);
+    }
+
+    @Test
+    public void testBatchDeleteDoc() throws IOException {
+        BulkRequest bulkRequest = new BulkRequest();
+        List<String> docIds = new ArrayList<>(Arrays.asList("2", "3", "4"));
+        for (String docId : docIds) {
+            DeleteRequest deleteRequest = new DeleteRequest(USER_INDEX, docId);
+            bulkRequest.add(deleteRequest);
+        }
+
+        BulkResponse bulkResponse = client.bulk(bulkRequest, RequestOptions.DEFAULT);
+        System.out.println("批量删除文档结果:" + bulkResponse.getItems().length);
     }
 
 }

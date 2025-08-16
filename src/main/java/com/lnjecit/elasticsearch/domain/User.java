@@ -6,6 +6,16 @@ public class User {
     private Integer age;
     private String sex;
 
+    public User() {
+    }
+
+    public User(Long id, String name, Integer age, String sex) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.sex = sex;
+    }
+
     public Long getId() {
         return id;
     }
