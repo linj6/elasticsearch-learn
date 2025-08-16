@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <!-- 设置 Elasticsearch 包的日志级别为 DEBUG -->
+        <Logger name="org.elasticsearch" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <Logger name="com.lnjecit.elasticsearch" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <!-- 其他包使用默认 INFO -->
+        <Root level="debug">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
